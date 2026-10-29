@@ -13,7 +13,7 @@ public class Main {
         task2Prototype();
     }
 
-    // ---------- Завдання 1: Singleton ----------
+    // -------- Завдання 1: Singleton ----------
     static void task1Singleton() {
         System.out.println("=== Завдання 1. Продаж місць через різні канали (Singleton) ===");
         Hall hall2 = new Hall(2, 5, 8);
