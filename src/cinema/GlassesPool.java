@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-
 /**
  * Пул 3D-окулярів. Роль у Object Pool: ObjectPool.
  *
