@@ -1,0 +1,74 @@
+@startuml task1_singleton
+title Завдання 1. Кінотеатр «Кадр»: система продажу квитків (Singleton)
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Main <<Client>> {
+  + {static} main(args: String[]): void
+  ~ {static} task1Singleton(): void
+}
+
+class TicketSalesSystem <<Singleton>> {
+  - id: String
+  - sessions: Map<String, Session>
+  - TicketSalesSystem()
+  + {static} getInstance(): TicketSalesSystem
+  + getId(): String
+  + registerSession(session: Session): void
+  + sellSeat(channel: Channel, sessionId: String, row: int, number: int): boolean
+}
+
+class "TicketSalesSystem.Holder" as Holder <<Lazy holder>> {
+  - {static} INSTANCE: TicketSalesSystem
+}
+
+class Session <<Domain>> {
+  - film: String
+  - start: LocalDateTime
+  - prices: Map<String, Double>
+  - seats: Seat[][]
+  + getId(): String
+  + getSeat(row: int, number: int): Seat
+  + sell(channel: Channel, row: int, number: int): boolean
+}
+
+class Seat <<Domain>> {
+  - row: int
+  - number: int
+  - category: String
+  - sold: boolean
+  - soldVia: Channel
+  + isSold(): boolean
+  + getSoldVia(): Channel
+  + sell(channel: Channel): void
+}
+
+enum Channel <<Domain>> {
+  CASHIER
+  WEBSITE
+  APP
+  + getTitle(): String
+}
+
+class Hall <<Domain>> {
+  - number: int
+  - rows: int
+  - seatsPerRow: int
+}
+
+note right of TicketSalesSystem
+  Каса, сайт і застосунок викликають
+  getInstance() і отримують один екземпляр.
+  Конструктор приватний — створити другу
+  систему в обхід getInstance() неможливо.
+end note
+
+Main ..> TicketSalesSystem : «use» getInstance()
+Holder --> "1" TicketSalesSystem : створює INSTANCE
+TicketSalesSystem +-- Holder
+TicketSalesSystem o-- "0..*" Session : sessions
+Session "1" *-- "1..*" Seat : seats
+Session --> "1" Hall
+Seat --> "0..1" Channel : soldVia
+TicketSalesSystem ..> Channel : «use»
+@enduml

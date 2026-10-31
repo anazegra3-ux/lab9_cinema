@@ -1,0 +1,80 @@
+@startuml task2_prototype
+title Завдання 2. Кінотеатр «Кадр»: формування сеансів (Prototype)
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Main <<Client>> {
+  ~ {static} task2Prototype(): void
+}
+
+interface "Prototype<T>" as Prototype <<Prototype>> {
+  + copy(): T
+}
+
+class Session <<ConcretePrototype>> {
+  - film: String
+  - start: LocalDateTime
+  - prices: Map<String, Double>
+  - rightsVerified: boolean
+  + Session(film: String, hall: Hall, start: LocalDateTime)
+  - Session(other: Session)
+  + copy(): Session
+  + setStart(start: LocalDateTime): void
+  + setPrice(category: String, price: double): void
+  + replaceAd(index: int, clip: AdClip): void
+  + sell(channel: Channel, row: int, number: int): boolean
+  + describe(): List<String>
+}
+
+class SessionPrototypeRegistry <<PrototypeRegistry>> {
+  - prototypes: Map<String, Session>
+  + {static} key(film: String, hallNumber: int): String
+  + register(key: String, prototype: Session): void
+  + create(key: String, start: LocalDateTime): Session
+}
+
+class Seat <<Nested state>> {
+  - row: int
+  - number: int
+  - category: String
+  - sold: boolean
+  - soldVia: Channel
+  + Seat(other: Seat)
+}
+
+class AdClip <<Nested state>> {
+  - title: String
+  - seconds: int
+  + AdClip(other: AdClip)
+}
+
+class Hall <<Immutable, shared>> {
+  - number: int
+  - rows: int
+  - seatsPerRow: int
+}
+
+enum Channel <<Domain>> {
+  CASHIER
+  WEBSITE
+  APP
+}
+
+note bottom of Session
+  copy() = глибока копія: нові Map цін,
+  новий список роликів, нова матриця місць
+  (кожне Seat копіюється). Hall незмінний,
+  тому його безпечно ділити між сеансами.
+  «Дорогі» кроки (схема зали, ціни, реклама,
+  права) виконує лише публічний конструктор.
+end note
+
+Prototype <|.. Session
+SessionPrototypeRegistry o-- "0..*" Session : prototypes
+SessionPrototypeRegistry ..> Session : «create» через copy()
+Main ..> SessionPrototypeRegistry : «use»
+Session "1" *-- "1..*" Seat : seats
+Session "1" *-- "0..*" AdClip : adBlock
+Session --> "1" Hall
+Seat --> "0..1" Channel
+@enduml
