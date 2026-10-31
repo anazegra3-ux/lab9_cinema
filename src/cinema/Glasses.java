@@ -4,6 +4,7 @@ package cinema;
  * 3D-окуляри. Роль у Object Pool: Reusable (повторно використовуваний об'єкт).
  * Конструктор пакетний: створювати окуляри може лише пул (GlassesPool).
  */
+
 public class Glasses {
     private final String id;
     private int issueCount;
