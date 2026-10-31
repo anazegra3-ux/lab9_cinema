@@ -1,4 +1,4 @@
-package cinema;
+package cinema.domain;
 
 /** Рекламний ролик у рекламному блоці сеансу. */
 public class AdClip {

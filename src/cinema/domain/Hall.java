@@ -1,4 +1,4 @@
-package cinema;
+package cinema.domain;
 
 /** Зала: незмінна схема місць (тому її безпечно ділити між сеансами). */
 public final class Hall {

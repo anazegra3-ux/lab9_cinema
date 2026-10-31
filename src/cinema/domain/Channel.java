@@ -1,4 +1,4 @@
-package cinema;
+package cinema.domain;
 
 /** Канал продажу квитків. */
 public enum Channel {

@@ -1,4 +1,6 @@
-package cinema;
+package cinema.domain;
+
+import cinema.prototype.Prototype;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
