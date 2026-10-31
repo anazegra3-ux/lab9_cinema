@@ -1,4 +1,9 @@
-package cinema;
+package cinema.singleton;
+
+import cinema.domain.Channel;
+import cinema.domain.Logger;
+import cinema.domain.Seat;
+import cinema.domain.Session;
 
 import java.util.HashMap;
 import java.util.Map;

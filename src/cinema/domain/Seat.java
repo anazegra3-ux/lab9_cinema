@@ -1,4 +1,4 @@
-package cinema;
+package cinema.domain;
 
 /** Місце в залі на конкретному сеансі (стан належить сеансу). */
 public class Seat {

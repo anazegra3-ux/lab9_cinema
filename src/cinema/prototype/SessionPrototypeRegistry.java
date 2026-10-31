@@ -1,4 +1,7 @@
-package cinema;
+package cinema.prototype;
+
+import cinema.domain.Logger;
+import cinema.domain.Session;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
