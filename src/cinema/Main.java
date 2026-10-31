@@ -1,9 +1,15 @@
 package cinema;
 
+import cinema.domain.*;
+import cinema.prototype.SessionPrototypeRegistry;
+import cinema.singleton.TicketSalesSystem;
+
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -11,6 +17,8 @@ public class Main {
         task1Singleton();
         System.out.println();
         task2Prototype();
+        System.out.println();
+        task3ObjectPool();
     }
 
     // -------- Завдання 1: Singleton ----------
@@ -68,6 +76,63 @@ public class Main {
                 + sessions.get(1).describe().get(1).equals(proto.describe().get(1))
                 + " (ціни), "
                 + sessions.get(1).describe().get(3).equals("Продані місця: —") + " (місця)");
+    }
+
+    // ---------- Завдання 3: Object Pool ----------
+    static void task3ObjectPool() {
+        System.out.println("=== Завдання 3. Видача 3D-окулярів (Object Pool) ===");
+        final int capacity = 4;
+        GlassesPool pool = new GlassesPool(capacity);
+
+        String[] viewers = {"5-7", "5-8", "5-9", "5-10", "6-1", "6-2"};
+        Map<String, Glasses> held = new HashMap<>();
+
+        // 6 глядачів приходять на 3D-сеанс: 4 отримують окуляри, 2 очікують
+        Logger.log("Раннер", "На 3D-сеанс приходять " + viewers.length + " глядачів, окулярів — " + capacity);
+        for (String seat : viewers) {
+            Glasses g = pool.acquire(seat);
+            if (g != null) held.put(seat, g);
+        }
+        check("Видано не більше окулярів, ніж є: " + pool.getIssuedCount() + " з " + capacity,
+                pool.getIssuedCount() <= capacity);
+        check("Двоє глядачів очікують у черзі", pool.getWaitingCount() == 2);
+
+        // Закінчується попередній сеанс: повертаються дві пари
+        Logger.log("Раннер", "Попередній сеанс завершився: повертаються дві пари окулярів");
+        Glasses returned1 = held.remove("5-7");
+        Glasses returned2 = held.remove("5-8");
+        String next1 = pool.release(returned1);
+        if (next1 != null) held.put(next1, returned1);
+        String next2 = pool.release(returned2);
+        if (next2 != null) held.put(next2, returned2);
+
+        check("Очікуючі глядачі отримали окуляри: " + next1 + ", " + next2,
+                "6-1".equals(next1) && "6-2".equals(next2));
+        check("Прив'язка до попереднього глядача не зберігається ("
+                        + returned1.getId() + " → " + returned1.getAssignedSeat() + ")",
+                "6-1".equals(returned1.getAssignedSeat()));
+        check("Черга порожня, видано " + pool.getIssuedCount() + " з " + capacity,
+                pool.getWaitingCount() == 0 && pool.getIssuedCount() == capacity);
+
+        // Спроба повторно повернути вже повернені окуляри не ламає пул
+        Glasses spare = new Glasses("X-0");
+        pool.release(spare);   // чужі окуляри — відмова
+
+        // Кінець сеансу: усі решта повертаються
+        Logger.log("Раннер", "Кінець 3D-сеансу: усі окуляри повертаються");
+        for (Glasses g : new ArrayList<>(held.values())) {
+            pool.release(g);
+        }
+        check("Усі окуляри знову вільні: " + pool.getFreeCount() + " з " + capacity,
+                pool.getFreeCount() == capacity);
+
+        pool.printStatistics();
+        check("Загальна кількість пар не змінилась і дорівнює " + capacity,
+                pool.getCapacity() == capacity);
+    }
+
+    static void check(String description, boolean ok) {
+        Logger.log("Перевірка", (ok ? "OK: " : "ПОМИЛКА: ") + description);
     }
 
     static void printSideBySide(String lt, List<String> left, String rt, List<String> right) {
