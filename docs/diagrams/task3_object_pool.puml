@@ -1,0 +1,66 @@
+@startuml task3_object_pool
+title Завдання 3. Видача 3D-окулярів (Object Pool)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class GlassesPool <<ObjectPool>> {
+  - {static} SRC : String
+  - all : List<Glasses>
+  - free : Deque<Glasses>
+  - waiting : Deque<String>
+  + GlassesPool(capacity : int)
+  + acquire(seat : String) : Glasses
+  + release(g : Glasses) : String
+  + getCapacity() : int
+  + getFreeCount() : int
+  + getIssuedCount() : int
+  + getWaitingCount() : int
+  + printStatistics() : void
+}
+
+class Glasses <<Reusable>> {
+  - id : String
+  - issueCount : int
+  - assignedSeat : String
+  ~ Glasses(id : String)
+  ~ issueTo(seat : String) : void
+  ~ disinfectAndReset() : void
+  + getId() : String
+  + getIssueCount() : int
+  + getAssignedSeat() : String
+  + isIssued() : boolean
+}
+
+class Logger {
+  + {static} log(source : String, event : String) : void
+  + {static} expensive(source : String, event : String, millis : int) : void
+}
+
+class Main <<Client>> {
+  + {static} task3ObjectPool() : void
+  ~ {static} check(description : String, ok : boolean) : void
+}
+
+note right of GlassesPool
+  Роль: ObjectPool.
+  Усі пари створюються один раз у конструкторі.
+  acquire(): видає вільну пару або ставить
+  глядача у FIFO-чергу (waiting).
+  release(): дезінфекція, скидання прив'язки,
+  повернення у вільні або видача першому з черги.
+end note
+
+note right of Glasses
+  Роль: Reusable.
+  Пакетний конструктор: створювати
+  пари може лише пул.
+  disinfectAndReset() стирає прив'язку
+  до попереднього глядача.
+end note
+
+GlassesPool *-- "4" Glasses : all
+GlassesPool o-- "0..4" Glasses : free
+GlassesPool ..> Logger : <<use>>
+Main ..> GlassesPool : acquire() / release()
+Main ..> Glasses : <<use>>
+@enduml
