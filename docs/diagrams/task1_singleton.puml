@@ -56,6 +56,11 @@ class Hall <<Domain>> {
   - seatsPerRow: int
 }
 
+class Logger <<Utility>> {
+  + {static} log(source: String, event: String): void
+  + {static} expensive(source: String, event: String, millis: int): void
+}
+
 note right of TicketSalesSystem
   Каса, сайт і застосунок викликають
   getInstance() і отримують один екземпляр.
@@ -71,4 +76,5 @@ Session "1" *-- "1..*" Seat : seats
 Session --> "1" Hall
 Seat --> "0..1" Channel : soldVia
 TicketSalesSystem ..> Channel : «use»
+TicketSalesSystem ..> Logger : «use»
 @enduml
