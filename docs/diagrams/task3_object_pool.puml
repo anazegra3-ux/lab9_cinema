@@ -3,6 +3,7 @@ title Завдання 3. Видача 3D-окулярів (Object Pool)
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
+
 class GlassesPool <<ObjectPool>> {
   - {static} SRC : String
   - all : List<Glasses>
