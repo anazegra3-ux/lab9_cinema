@@ -31,13 +31,13 @@ class Glasses <<Reusable>> {
   + isIssued() : boolean
 }
 
-class Logger {
+class Logger <<Utility>> {
   + {static} log(source : String, event : String) : void
   + {static} expensive(source : String, event : String, millis : int) : void
 }
 
 class Main <<Client>> {
-  + {static} task3ObjectPool() : void
+  ~ {static} task3ObjectPool() : void
   ~ {static} check(description : String, ok : boolean) : void
 }
 
