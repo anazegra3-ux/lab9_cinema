@@ -9,11 +9,8 @@ import java.util.List;
 
 /**
  * Пул 3D-окулярів. Роль у Object Pool: ObjectPool.
- *
  * Усі пари створюються один раз (закупівля — «дорога» операція).
  * Нові пари після цього не з'являються: їх кількість обмежена capacity.
- * Стратегія при браку окулярів: глядач стає у FIFO-чергу очікування
- * і отримує пару, щойно вона повертається.
  */
 public class GlassesPool {
     private static final String SRC = "Пул окулярів";
@@ -32,10 +29,6 @@ public class GlassesPool {
         Logger.log(SRC, "Пул створено, загальна кількість пар: " + capacity);
     }
 
-    /**
-     * Видати окуляри глядачеві на місці seat.
-     * @return окуляри або null, якщо вільних немає (глядач поставлений у чергу)
-     */
     public synchronized Glasses acquire(String seat) {
         Glasses g = free.pollFirst();
         if (g == null) {
@@ -49,11 +42,6 @@ public class GlassesPool {
         return g;
     }
 
-    /**
-     * Повернути окуляри: дезінфекція, скидання прив'язки, повернення у пул.
-     * Якщо хтось очікує — окуляри одразу видаються першому з черги.
-     * @return місце глядача з черги, який отримав ці окуляри, або null
-     */
     public synchronized String release(Glasses g) {
         if (!all.contains(g) || !g.isIssued()) {
             Logger.log(SRC, "Відмова: окуляри " + g.getId() + " не були видані");

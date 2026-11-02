@@ -19,7 +19,6 @@ public class Glasses {
         this.issueCount++;
     }
 
-    /** Скидання стану: дезінфекція + розрив прив'язки до попереднього глядача. */
     void disinfectAndReset() {
         this.assignedSeat = null;
     }
